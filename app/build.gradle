@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -62,7 +63,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
-    implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
+   // implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
 
 
     // ViewModel
@@ -78,6 +79,13 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version"
 
     implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
+
+    // Room
+    implementation "androidx.room:room-runtime:2.4.0"
+    implementation 'androidx.room:room-ktx:2.4.0'
+    implementation "androidx.compose.runtime:runtime-livedata:1.0.5"
+    annotationProcessor "androidx.room:room-compiler:2.4.0"
+    kapt "androidx.room:room-compiler:2.4.0"
 
 
 }
