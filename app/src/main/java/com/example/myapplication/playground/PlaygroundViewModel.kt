@@ -1,10 +1,10 @@
-package com.example.myapplication
+package com.example.myapplication.playground
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class MainViewModel: ViewModel() {
+class PlaygroundViewModel: ViewModel() {
 
     private var _name: MutableLiveData<String> = MutableLiveData("")
     var name: LiveData<String> = _name

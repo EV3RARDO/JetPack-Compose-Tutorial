@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.playground
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.ui.theme.MyApplicationTheme
 
-class MainActivity : ComponentActivity() {
+class PlaygroundActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,7 +111,7 @@ fun Greeting(name: String) {
     }
 }
 @Composable
-fun HelloScreen(viewModel: MainViewModel = viewModel(modelClass = MainViewModel::class.java)) {
+fun HelloScreen(viewModel: PlaygroundViewModel = viewModel(modelClass = PlaygroundViewModel::class.java)) {
     val name by viewModel.name.observeAsState("")
     HelloContent(name = name, onNameChange = { viewModel.onNameChange(it)} )
 
