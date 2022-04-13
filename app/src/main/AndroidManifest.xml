@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
-            android:name=".bottombardemo.BottomBarActivity"
+            android:name=".intrinsicsizedemo.IntrinsicSizeDemoActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.MyApplication">
