@@ -22,7 +22,6 @@ class IntrinsicSizeDemoActivity : ComponentActivity() {
         }
     }
 
-
     @Composable
     fun MainScreen() {
 
