@@ -1,25 +1,34 @@
-package com.example.myapplication.di
+package com.example.myapplication
 
+import android.content.Context
+import androidx.room.Room
+import com.example.myapplication.data.local.RestaurantsDao
+import com.example.myapplication.data.local.RestaurantsDb
 import com.example.myapplication.data.services.GithubService
+import com.example.myapplication.data.services.RestaurantsApiService
 import com.example.myapplication.domain.repository.GithubRepository
-import com.example.myapplication.domain.repository.GithubRepositoryImpl
+import com.example.myapplication.data.GithubRepositoryImpl
+import com.example.myapplication.domain.repository.RestaurantRepository
+import com.example.myapplication.data.RestaurantRepositoryImpl
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import timber.log.Timber
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NetworkModule {
+object AppModule {
 
     @Provides
     @Singleton
@@ -78,5 +87,48 @@ object NetworkModule {
     @Singleton
     fun provideGitHubRepository(githubService: GithubService): GithubRepository {
         return GithubRepositoryImpl(githubService = githubService)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideRestaurantsService(logging: Interceptor,): RestaurantsApiService {
+
+        val client = OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .build()
+
+        return Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
+            .baseUrl("https://restaurantsjetpackcomposedemo-default-rtdb.firebaseio.com/")
+            .build()
+            .create(RestaurantsApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRestaurantsRepository(
+        restaurantsApiService: RestaurantsApiService,
+        restaurantsDao: RestaurantsDao): RestaurantRepository {
+        return RestaurantRepositoryImpl(restaurantsApiService, restaurantsDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDataBase(@ApplicationContext context: Context): RestaurantsDb {
+        return Room.databaseBuilder(
+            context,
+            RestaurantsDb::class.java,
+            "restaurants_database")
+            .fallbackToDestructiveMigration()
+            .build()
+
+    }
+
+    @Provides
+    @Singleton
+    fun provideRestaurantsDao(restaurantsDb: RestaurantsDb): RestaurantsDao {
+        return restaurantsDb.dao
     }
 }
