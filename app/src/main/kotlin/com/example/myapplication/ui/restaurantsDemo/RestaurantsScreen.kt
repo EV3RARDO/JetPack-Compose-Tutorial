@@ -15,7 +15,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.example.myapplication.data.model.RemoteRestaurant
 import com.example.myapplication.domain.model.Restaurant
 
 @Composable
@@ -43,9 +46,13 @@ fun RestaurantsScreen(
         }
 
         if (state.isLoading) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(
+                Modifier.semantics {
+                    this.contentDescription = Description.RESTAURANTS_LOADING
+                }
+            )
         }
-        
+
         if (state.error != null) {
             Text(text = state.error)
         }
@@ -115,5 +122,26 @@ fun RestaurantDetails(
                 style = MaterialTheme.typography.body2
             )
         }
+    }
+}
+
+object Description {
+    const val RESTAURANTS_LOADING = "Circular loading icon"
+}
+
+object DummyContent {
+    fun getDomainRestaurants() = arrayListOf(
+        Restaurant(0, "title0", "description0", false),
+        Restaurant(1, "title1", "description1", false),
+        Restaurant(2, "title2", "description2", false),
+        Restaurant(3, "title3", "description3", false)
+    )
+
+    fun getRemoteRestaurants() = getDomainRestaurants().map {
+        RemoteRestaurant(
+            id = it.id,
+            title = it.title,
+            description = it.description
+        )
     }
 }
