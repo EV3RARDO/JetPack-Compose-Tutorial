@@ -4,11 +4,13 @@ import com.example.myapplication.data.RestaurantRepositoryImpl
 import com.example.myapplication.domain.GetSortedRestaurantsUseCase
 import com.example.myapplication.domain.LoadRestaurantsUseCase
 import com.example.myapplication.domain.ToggleFavoriteRestaurantUseCase
+import com.example.myapplication.ui.restaurantsDemo.DummyContent
 import com.example.myapplication.ui.restaurantsDemo.RestaurantScreenState
 import com.example.myapplication.ui.restaurantsDemo.RestaurantsViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
@@ -24,10 +26,9 @@ class RestaurantViewModelTest {
             restaurantsApiService = FakeApiService(),
             restaurantsDao = FakeRoomDao()
         )
-        val getSortedRestaurantsUseCase = GetSortedRestaurantsUseCase(restaurantRepository)
-        val loadRestaurantsUseCase = LoadRestaurantsUseCase(restaurantRepository)
-        val toggleFavoriteRestaurantUseCase = ToggleFavoriteRestaurantUseCase(restaurantRepository)
-
+        val getSortedRestaurantsUseCase = GetSortedRestaurantsUseCase(restaurantRepository, dispatcher)
+        val loadRestaurantsUseCase = LoadRestaurantsUseCase(restaurantRepository, dispatcher)
+        val toggleFavoriteRestaurantUseCase = ToggleFavoriteRestaurantUseCase(restaurantRepository, dispatcher)
 
         return RestaurantsViewModel(
             getSortedRestaurantsUseCase = getSortedRestaurantsUseCase,
@@ -47,5 +48,20 @@ class RestaurantViewModelTest {
             isLoading = true,
             error = null
         ))
+    }
+
+    @Test
+    fun stateWithContent_isProduced() = scope.run {
+        val viewModel = getViewModel()
+        advanceUntilIdle()
+        val currentState = viewModel.state.value
+
+        assert(currentState == RestaurantScreenState(
+            restaurants = DummyContent.getDomainRestaurants(),
+            isLoading = false,
+            error = null
+        ))
+
+
     }
 }

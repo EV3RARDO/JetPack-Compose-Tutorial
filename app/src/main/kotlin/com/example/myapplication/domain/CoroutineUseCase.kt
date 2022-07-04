@@ -1,11 +1,11 @@
 package com.example.myapplication.domain
 
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-abstract class CoroutineUseCase<in T, out R>(private val dispatcher: CoroutineDispatcher = Dispatchers.IO) {
-
+abstract class CoroutineUseCase<in T, out R>(
+    private val dispatcher: CoroutineDispatcher
+) {
     suspend operator fun invoke(params: T): com.example.myapplication.data.common.Result<R> =
         withContext(dispatcher) {
             return@withContext try {

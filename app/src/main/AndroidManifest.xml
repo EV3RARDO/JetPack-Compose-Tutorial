@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
-            android:name=".ui.restaurantsDemo.RestaurantsActivity"
+            android:name=".ui.githubDemo.GithubActivity"
             android:exported="true"
             android:theme="@style/Theme.MyApplication">
             <intent-filter>

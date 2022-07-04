@@ -2,14 +2,13 @@ package com.example.myapplication
 
 import android.content.Context
 import androidx.room.Room
+import com.example.myapplication.data.RepositoriesPagingSource
+import com.example.myapplication.data.RestaurantRepositoryImpl
 import com.example.myapplication.data.local.RestaurantsDao
 import com.example.myapplication.data.local.RestaurantsDb
-import com.example.myapplication.data.services.GithubService
+import com.example.myapplication.data.services.RepositoriesApiService
 import com.example.myapplication.data.services.RestaurantsApiService
-import com.example.myapplication.domain.repository.GithubRepository
-import com.example.myapplication.data.GithubRepositoryImpl
 import com.example.myapplication.domain.repository.RestaurantRepository
-import com.example.myapplication.data.RestaurantRepositoryImpl
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -67,32 +66,31 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providesCmsApi(
-        moshi: Moshi,
+    fun providesRepositoryApiService(
         logging: Interceptor,
-    ): GithubService {
+    ): RepositoriesApiService {
         val client = OkHttpClient.Builder()
             .addInterceptor(logging)
             .build()
 
         return Retrofit.Builder()
-            .baseUrl("https://api.github.com")
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl("https://api.github.com/search/")
             .client(client)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
-            .create(GithubService::class.java)
+            .create(RepositoriesApiService::class.java)
     }
 
-    @Provides
+/*    @Provides
     @Singleton
     fun provideGitHubRepository(githubService: GithubService): GithubRepository {
         return GithubRepositoryImpl(githubService = githubService)
-    }
+    }*/
 
 
     @Provides
     @Singleton
-    fun provideRestaurantsService(logging: Interceptor,): RestaurantsApiService {
+    fun provideRestaurantsService(logging: Interceptor): RestaurantsApiService {
 
         val client = OkHttpClient.Builder()
             .addInterceptor(logging)
@@ -110,7 +108,8 @@ object AppModule {
     @Singleton
     fun provideRestaurantsRepository(
         restaurantsApiService: RestaurantsApiService,
-        restaurantsDao: RestaurantsDao): RestaurantRepository {
+        restaurantsDao: RestaurantsDao
+    ): RestaurantRepository {
         return RestaurantRepositoryImpl(restaurantsApiService, restaurantsDao)
     }
 
@@ -120,7 +119,8 @@ object AppModule {
         return Room.databaseBuilder(
             context,
             RestaurantsDb::class.java,
-            "restaurants_database")
+            "restaurants_database"
+        )
             .fallbackToDestructiveMigration()
             .build()
 
@@ -130,5 +130,13 @@ object AppModule {
     @Singleton
     fun provideRestaurantsDao(restaurantsDb: RestaurantsDb): RestaurantsDao {
         return restaurantsDb.dao
+    }
+
+    @Provides
+    @Singleton
+    fun provideRepositoriesPaginSource(
+        repositoriesApiService: RepositoriesApiService
+    ): RepositoriesPagingSource {
+        return RepositoriesPagingSource(repositoriesApiService = repositoriesApiService)
     }
 }
